@@ -1,0 +1,20 @@
+<html>
+<script>
+    // Setup websocket
+    var ws = new WebSocket("ws://localhost:6969/connect");
+    ws.onmessage = function(evt) {
+        // console.log("Message: " + evt.content);
+        console.log(evt.data);
+    };
+
+    // Send hello message
+    message = {
+        "body": "hello"
+    };
+
+    ws.onopen = function(evt) {
+        ws.send(JSON.stringify(message));
+    };
+</script>
+</html>
+
