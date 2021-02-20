@@ -1,23 +1,14 @@
 <!DOCTYPE html>
 <html lang='en'>
 <head>
-    <style>
-        html, body {
-            margin: 0;
-            overflow: hidden;
-        }
-
-        #fpscounter {
-            position: absolute;
-            right: 0;
-        }
-    </style>
 </head>
 <body>
-    <div id="fpscounter"></div>
-    <canvas id="thecanvas" width="640" height="480">
-    </canvas>
-
-    <script type="module" src="/src/index.js"></script>
+    <form method="GET" action="app.html">
+        <label for="name">Name:</label>
+        <input type="text" name="name"></input>
+        <label for="url">URL:</label>
+        <input type="url" name="url"></input>
+        <button type="submit">Submit</button>
+    </form>
 </body>
 </html>

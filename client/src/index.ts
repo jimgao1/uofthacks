@@ -26,8 +26,11 @@ const handler: MessageHandler = {
     }
 };
 
+const queryDict: { [key: string]: string } = {};
+location.search.substr(1).split("&").forEach(function(item) {queryDict[item.split("=")[0]] = item.split("=")[1]});
+
 const connection = new Connection(handler, null as any);
-connection.connect(prompt("url") || "ws://192.168.1.124:6969", prompt("name") || "Jim Fucking Gao", identifier)
+connection.connect(queryDict['url'] || "ws://192.168.1.124:6969", queryDict['prompt'] || "Jim Fucking Gao", identifier)
 .then(() => {
     console.log("connection successful");
     console.log(`token: ${connection.token}`)
