@@ -35,6 +35,8 @@ connection.connect(queryDict['url'] || "ws://192.168.1.124:6969", queryDict['pro
     console.log("connection successful");
     console.log(`token: ${connection.token}`)
     connection.attach();
+
+    document.getElementById("overlay")?.remove();
 });
 
 canvas.strokeHandler = stroke => {
