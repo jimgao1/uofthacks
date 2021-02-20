@@ -4,6 +4,16 @@ import { ServerDrawMessage } from './connection/server';
 
 const identifier = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
 
+function resizeCanvas() {
+    // canvas.setWidth(window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth);
+    // canvas.setHeight(window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight);
+    canvas.resize(window.innerWidth, window.innerHeight);
+    console.log("resized blyat")
+}
+
+window.addEventListener('resize', resizeCanvas);
+
+
 const element = document.getElementById('thecanvas') as HTMLCanvasElement;
 if (element == null) {
     throw "Fuck you";
@@ -27,6 +37,7 @@ connection.connect(prompt("url") || "ws://192.168.1.124:6969", prompt("name") ||
 });
 
 
+resizeCanvas();
 window.requestAnimationFrame((function cb(timestamp) {
     window.requestAnimationFrame(cb);
     canvas.render(timestamp);

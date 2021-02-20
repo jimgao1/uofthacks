@@ -12,8 +12,8 @@ export class DrawingCanvas {
 
     /* drawing state */
     private drawing: boolean = false;
-    private lastpos: Pos = {x: 0, y: 0};
-    private curpos: Pos = {x: 0, y: 0};
+    private lastpos: Pos = { x: 0, y: 0 };
+    private curpos: Pos = { x: 0, y: 0 };
 
     constructor(element: HTMLCanvasElement) {
         const ctx = element.getContext('2d');
@@ -28,37 +28,46 @@ export class DrawingCanvas {
         this.ctx.lineWidth = 2;
         this.initEventHandlers();
     }
+    
+    public resize(w:number, h:number) {
+        var W = this.canvas.width;
+        var H = this.canvas.height;
+        let temp = this.ctx.getImageData(0, 0, W, H);
+        this.ctx.canvas.width = w - 99;
+        this.ctx.canvas.height = h - 99;
+        this.ctx.putImageData(temp, 0, 0);
+    }
 
     private initEventHandlers() {
-        this.canvas.addEventListener('mousedown', e => {
-            this.drawing = true;
-            this.lastpos.x = e.x;
-            this.lastpos.y = e.y;
-        });
-        this.canvas.addEventListener('mouseup', e => {
-            this.drawing = false;
-        });
-        this.canvas.addEventListener('mousemove', e => {
-            this.curpos.x = e.x;
-            this.curpos.y = e.y;
-        });
-        this.canvas.addEventListener('touchstart', e => {
-            this.drawing = true;
-            const touch = e.touches[0];
+    this.canvas.addEventListener('mousedown', e => {
+        this.drawing = true;
+        this.lastpos.x = e.x;
+        this.lastpos.y = e.y;
+    });
+    this.canvas.addEventListener('mouseup', e => {
+        this.drawing = false;
+    });
+    this.canvas.addEventListener('mousemove', e => {
+        this.curpos.x = e.x;
+        this.curpos.y = e.y;
+    });
+    this.canvas.addEventListener('touchstart', e => {
+        this.drawing = true;
+        const touch = e.touches[0];
 
-            this.lastpos.x = touch.clientX;
-            this.lastpos.y = touch.clientY;
-        });
-        this.canvas.addEventListener('touchend', e => {
-            this.drawing = false;
-        });
-        this.canvas.addEventListener('touchmove', e => {
-            const touch = e.touches[0];
+        this.lastpos.x = touch.clientX;
+        this.lastpos.y = touch.clientY;
+    });
+    this.canvas.addEventListener('touchend', e => {
+        this.drawing = false;
+    });
+    this.canvas.addEventListener('touchmove', e => {
+        const touch = e.touches[0];
 
-            this.curpos.x = touch.clientX;
-            this.curpos.y = touch.clientY;
-        });
-    }
+        this.curpos.x = touch.clientX;
+        this.curpos.y = touch.clientY;
+    });
+}
 
     render(timestamp: number) {
         let delta = timestamp - this.lastframe;
