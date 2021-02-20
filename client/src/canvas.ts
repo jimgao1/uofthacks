@@ -20,6 +20,7 @@ export class DrawingCanvas {
     private lastframe: number = 0;
 
     /* drawing state */
+    private color: string = "#" + ((1<<24)*Math.random() | 0).toString(16);
     private drawing: boolean = false;
     private lastpos: Pos = { x: 0, y: 0 };
     private curpos: Pos = { x: 0, y: 0 };
@@ -33,7 +34,8 @@ export class DrawingCanvas {
         this.canvas = element;
         this.ctx = ctx;
 
-        this.ctx.strokeStyle = '#000000';
+        console.log(this.color);
+        this.ctx.strokeStyle = this.color;
         this.ctx.lineWidth = 2;
         this.initEventHandlers();
     }
@@ -82,6 +84,8 @@ export class DrawingCanvas {
         }
 
         if (this.drawing) {
+            this.ctx.strokeStyle = this.color;
+            this.ctx.beginPath();
             this.ctx.moveTo(this.lastpos.x, this.lastpos.y);
             this.ctx.lineTo(this.curpos.x, this.curpos.y);
             this.ctx.stroke();
@@ -92,6 +96,7 @@ export class DrawingCanvas {
 
     drawStroke(points: Array<[number, number]>, color: string) {
         this.ctx.strokeStyle = color;
+        this.ctx.beginPath();
         this.ctx.moveTo(points[0][0], points[0][1]);
         for (const point of points) {
             this.ctx.lineTo(point[0], point[1]);
@@ -112,7 +117,7 @@ export class DrawingCanvas {
 
         this.current = {
             points: [[x, y]],
-            color: this.ctx.strokeStyle.toString(),
+            color: this.color,
         };
     }
 
