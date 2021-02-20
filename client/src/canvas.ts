@@ -57,8 +57,7 @@ export class DrawingCanvas {
             this.endStroke();
         });
         this.canvas.addEventListener('mousemove', e => {
-            console.log('fuck stroke', e.movementX, e.movementY);
-            this.updateStroke(e.movementX, e.movementY);
+            this.updateStroke(e.x, e.y);
         });
         this.canvas.addEventListener('touchstart', e => {
             const touch = e.touches[0];
@@ -69,7 +68,7 @@ export class DrawingCanvas {
         });
         this.canvas.addEventListener('touchmove', e => {
             const touch = e.touches[0];
-            this.updateStroke(touch.clientX - this.curpos.x, touch.clientY - this.curpos.y);
+            this.updateStroke(touch.clientX, touch.clientY);
         });
     }
 
@@ -83,6 +82,7 @@ export class DrawingCanvas {
         }
 
         if (this.drawing) {
+            console.log('here', this.lastpos.x, this.lastpos.y, this.curpos.x, this.curpos.y);
             this.ctx.moveTo(this.lastpos.x, this.lastpos.y);
             this.ctx.lineTo(this.curpos.x, this.curpos.y);
             this.ctx.stroke();
@@ -120,7 +120,6 @@ export class DrawingCanvas {
         if (!this.drawing) {
             return;
         }
-        // TODO VERIFY THIS PLEASE
         if (this.current) {
             this.current.points.push([x, y]);
         }

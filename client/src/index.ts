@@ -30,6 +30,7 @@ const connection = new Connection(handler, null as any);
 connection.connect(prompt("url") || "ws://192.168.1.124:6969", prompt("name") || "Jim Fucking Gao", identifier)
 .then(() => {
     console.log("connection successful");
+    console.log(`token: ${connection.token}`)
     connection.attach();
 });
 
