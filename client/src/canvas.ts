@@ -1,3 +1,5 @@
+import axios from 'axios'
+
 interface Pos {
     x: number;
     y: number;
@@ -37,6 +39,7 @@ export class DrawingCanvas {
         console.log(this.color);
         this.ctx.strokeStyle = this.color;
         this.ctx.lineWidth = 2;
+        this.getHistory();
         this.initEventHandlers();
     }
     
@@ -47,6 +50,17 @@ export class DrawingCanvas {
             this.drawStroke(stroke.points, stroke.color, false);
         }
     }
+
+    private async getHistory() {
+        await axios.get('http://192.168.1.124:6970/strokes').then(async res => {
+            for (const entries of res.data) {
+                this.history.push(entries);
+            }
+            this.resize(this.canvas.width, this.canvas.height);
+        }).catch(e => {
+            throw "Error getting history stroke from server";
+        })
+    };
 
     private initEventHandlers() {
         this.canvas.addEventListener('mousedown', e => {
