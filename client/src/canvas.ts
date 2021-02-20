@@ -72,7 +72,17 @@ export class DrawingCanvas {
             this.lastpos.x = this.curpos.x;
             this.lastpos.y = this.curpos.y;
         }
-
     }
 
+    drawStroke(base: [number, number], deltas: Array<[number, number]>, color: string) {
+        this.ctx.strokeStyle = color;
+        this.ctx.moveTo(base[0], base[1]);
+        const lastpoint = base;
+        for (const delta of deltas) {
+            lastpoint[0] += delta[0];
+            lastpoint[1] += delta[1];
+            this.ctx.lineTo(lastpoint[0], lastpoint[1]);
+        }
+        this.ctx.stroke();
+    }
 };

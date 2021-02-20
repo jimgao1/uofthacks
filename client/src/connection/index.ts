@@ -1,11 +1,11 @@
-import { ClientConnectMessage, ClientMessage, ClientMethod } from './client';
+import { ClientConnectMessage, ClientMethod } from './client';
 import { ServerMessage, ServerMethod } from './server';
 
-interface MessageHandler {
+export interface MessageHandler {
     [ServerMethod.CLIENT_DRAW]: (e: ServerMessage) => void;
 };
 
-type ErrorHandler = (e: any) => void;
+export type ErrorHandler = (e: any) => void;
 
 export class Connection {
     ws?: WebSocket;
@@ -19,7 +19,7 @@ export class Connection {
         this.errorHandler = errorHandler;
     }
 
-    connect(url: string, name: string): Promise<void> {
+    connect(url: string, name: string, identifier: string): Promise<void> {
         return new Promise((resolve, reject) => {
             const ws = new WebSocket(url);
 
@@ -28,13 +28,15 @@ export class Connection {
                 if (msg.method === 'client_token') {
                     this.token = msg.client_token;
                 }
+
+                this.ws = ws;
                 ws.removeEventListener('message', tokenHandler);
                 resolve();
             };
             const openHandler = () => {
                 const connectRequest: ClientConnectMessage = {
                     method: ClientMethod.CONNECT,
-                    identifier: Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5),
+                    identifier,
                     name,
                 };
                 ws.send(JSON.stringify(connectRequest));
@@ -50,5 +52,24 @@ export class Connection {
             ws.addEventListener('open', openHandler);
             ws.addEventListener('error', errorHandler);
         });
+    }
+
+    attach() {
+        if (this.ws === undefined) {
+            throw 'Please piss the fuck off';
+        }
+
+        this.ws.addEventListener('message', event => {
+            const msg = JSON.parse(event.data) as ServerMessage;
+            if (msg.method in this.messageHandler) {
+                this.messageHandler[msg.method](msg);
+            }
+        });
+
+        this.ws.addEventListener('error', this.errorHandler);
+    }
+
+    draw(stroke: Array<[number, number]>, color: string) {
+        // TODO
     }
 };
