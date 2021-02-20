@@ -82,7 +82,6 @@ export class DrawingCanvas {
         }
 
         if (this.drawing) {
-            console.log('here', this.lastpos.x, this.lastpos.y, this.curpos.x, this.curpos.y);
             this.ctx.moveTo(this.lastpos.x, this.lastpos.y);
             this.ctx.lineTo(this.curpos.x, this.curpos.y);
             this.ctx.stroke();
@@ -109,6 +108,7 @@ export class DrawingCanvas {
         this.drawing = true;
         this.lastpos.x = x;
         this.lastpos.y = y;
+        this.curpos = { ...this.lastpos };
 
         this.current = {
             points: [[x, y]],
