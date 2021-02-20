@@ -107,7 +107,7 @@ export class DrawingCanvas {
         let delta = timestamp - this.lastframe;
         this.lastframe = timestamp;
 
-        const fps = 1000 / delta;
+        let fps = (1000 / delta).toFixed(2);
         if (this.fpscounter) {
             this.fpscounter.textContent = `FPS: ${fps}`;
         }
