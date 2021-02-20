@@ -41,12 +41,11 @@ export class DrawingCanvas {
     }
     
     public resize(w:number, h:number) {
-        const W = this.canvas.width;
-        const H = this.canvas.height;
-        let temp = this.ctx.getImageData(0, 0, W, H);
         this.ctx.canvas.width = w;
         this.ctx.canvas.height = h;
-        this.ctx.putImageData(temp, 0, 0);
+        for (const stroke of this.history) {
+            this.drawStroke(stroke.points, stroke.color, false);
+        }
     }
 
     private initEventHandlers() {
@@ -94,7 +93,7 @@ export class DrawingCanvas {
         }
     }
 
-    drawStroke(points: Array<[number, number]>, color: string) {
+    drawStroke(points: Array<[number, number]>, color: string, save: boolean = true) {
         this.ctx.strokeStyle = color;
         this.ctx.beginPath();
         this.ctx.moveTo(points[0][0], points[0][1]);
@@ -103,10 +102,12 @@ export class DrawingCanvas {
         }
         this.ctx.stroke();
 
-        this.history.push({
-            points,
-            color,
-        });
+        if (save) {
+            this.history.push({
+                points,
+                color,
+            });
+        }
     }
 
     private startStroke(x: number, y: number) {
