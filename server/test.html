@@ -1,19 +1,55 @@
 <html>
+    <head>fuck shit</head>
 <script>
     // Setup websocket
-    var ws = new WebSocket("ws://localhost:6969/connect");
-    ws.onmessage = function(evt) {
-        // console.log("Message: " + evt.content);
-        console.log(evt.data);
-    };
+    if (window.navigator.platform == "Win32") {
+        console.log("windows")
+        var ws = new WebSocket("ws://192.168.1.124:6969/");
+    } else {
+        var ws = new WebSocket("ws://localhost:6969/");
+    }
 
-    // Send hello message
-    message = {
-        "body": "hello"
+    console.log("nice")
+
+    var client_id = null;
+
+    ws.onmessage = function(evt) {
+        // ignore heardbeats
+        if (evt.data == "") return;
+
+        msg = JSON.parse(evt.data);
+        console.log(msg);
+        if (msg.method == "client_token") {
+            client_id = msg.client_token;
+            console.log("Got client id: " + client_id);
+        }
     };
 
     ws.onopen = function(evt) {
-        ws.send(JSON.stringify(message));
+        // connect to server
+        ws.send(JSON.stringify({
+            "method": "connect",
+            "identifier": Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5)
+        }));
+
+        // Send keepalives
+        setInterval(function(){
+            ws.send(JSON.stringify({}))
+        }, 1000);
+
+        // Send fake draw message every 5 seconds
+        setInterval(function(){
+            msg = {
+                "method": "draw",
+                "token": client_id,
+                "base": [Math.floor(Math.random() * 320), Math.floor(Math.random() * 240)],
+                "deltas": [[Math.floor(Math.random() * 100 - 50), Math.floor(Math.random() * 100 - 50)],
+                            [Math.floor(Math.random() * 100 - 50), Math.floor(Math.random() * 100 - 50)]],
+                "color": '#000000'
+            };
+
+            ws.send(JSON.stringify(msg));
+        }, 5000);
     };
 </script>
 </html>

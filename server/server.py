@@ -4,54 +4,173 @@ import json
 import random
 import websockets
 
+class Client:
+    def __init__(self, ws, req):
+        self.ws = ws
+        self.identifier = req['identifier']
+
+        d = "0123456789abcdef"
+        self.token = "".join([ d[random.randrange(len(d))] for _ in range(32) ])
+
 clients = dict()
+
+oof = "http://192.168.1.124:8080/test.html"
 
 async def connect(ws, req):
     # generate a new user identifier
     if ws not in clients:
-        d = "0123456789abcdef"
-        clients[ws] = "".join([ d[random.randrange(len(d))] for _ in range(32) ])
+        clients[ws] = Client(ws, req)
+
+        # tell everyone else that a client joined
+    msg = {
+        "method": "client_message",
+        "identifier": clients[ws].identifier,
+        "message": "what the actual fuck " + clients[ws].identifier + " joined"
+    }
+
+    for cl in clients:
+        if cl != ws:
+            print("broadcasting to client with id", clients[cl].identifier)
+            await clients[cl].ws.send(json.dumps(msg))
+
+    print("New client", clients[ws].identifier)
 
     return {
-        "client_id": clients[ws]
+        "method": "client_token",
+        "client_token": clients[ws].token
     }
 
 async def disconnect(ws, req):
-    if ws not in clients or 'token' not in req or req['token'] != clients[ws]:
+    # check which user it is 
+    if ws not in clients or 'token' not in req or req['token'] != clients[ws].token:
         return {
             "error": "Invalid or missing token"
         }
 
+    # client can fuck off here 
     del clients[ws]
     return {
         "result": "Okay"
     }
 
+async def draw(ws, req):
+    # check which user it is and user is valid 
+    if ws not in clients or 'token' not in req or req['token'] != clients[ws].token:
+        print("not authenticated")
+        return {
+            "error": "Invalid or missing token"
+        }
+
+    # create message to broadcast
+    user = clients[ws]
+
+    # this is a stroke to a pp 
+    msg = {
+        "method": "client_draw",
+        "identifier": user.identifier,
+        "base": req['base'],
+        "deltas": req['deltas'],
+        "color": req['color']
+    }
+
+    # broadcast message
+    for cl in clients:
+        if cl != ws:
+            print("broadcasting to client with id", clients[cl].identifier)
+            await clients[cl].ws.send(json.dumps(msg))
+
+    # return fuck shit 
+    return {
+        "fuck": "shit"
+    }
+
+async def heartbeat(ws):
+    # make sure there is stream of traffic 
+    while True:
+        await ws.send("")
+        await asyncio.sleep(10)
+
 routes = {
-    "/connect": connect
-    "/disconnect": disconnect
+    "connect": connect,
+    "disconnect": disconnect,
+    "draw": draw
 }
 
 async def handler(ws, path):
     print("Request:", path)
 
-    msg = await ws.recv()
-    try:
-        req = json.loads(msg)
+    # begin heartbeats
+    # loop = asyncio.get_event_loop()
+    # task = loop.create_task(heartbeat(ws))
 
-        if path in routes:
-            res = await routes[path](ws, req)
-            await ws.send(json.dumps(res))
-        else:
-            raise Error("Invalid path", path)
+    async for msg in ws:
+        try:
+            req = json.loads(msg)
 
-    except Exception as e:
-        print(e)
-        await ws.send(json.dumps({
-            "error": "Invalid message"
-        }))
+            # ignore keepalives
+            if req == {}: continue
+
+            print("Message:", msg)
+
+            if 'method' in req:
+                res = await routes[req['method']](ws, req)
+                print("Response", res)
+                await ws.send(json.dumps(res))
+            else:
+                pass
+                # raise Error("Invalid path", path) 
+ 
+        except Exception as e:
+            print("Error!", e)
+            await ws.send(json.dumps({
+                "error": "Invalid message"
+            }))
+
+    # tell everyone else that the client disconnected 
+    msg = {
+        "method": "client_message",
+        "identifier": clients[ws].identifier,
+        "message": "what the actual fuck " + clients[ws].identifier + " left"
+    }
+
+    for cl in clients:
+        print("broadcasting to client with id", clients[cl].identifier)
+        if cl != ws:
+            await clients[cl].ws.send(json.dumps(msg))
+
+    # client can fuck off here 
+    del clients[ws]
+
+    print("Closed")
+
+async def poke(ws, req):
+    """ 
+    pokey pokey 
+    """
+
+    if ws not in clients:
+        clients[ws] = Client(ws, req)
+
+    # tell everyone else that a client joined
+    msg = {
+        "method": "client_message",
+        "identifier": clients[ws].identifier,
+        "message": "hey " + clients[ws].identifier + " wanna fuck?"
+    }
+
+    for cl in clients:
+        if cl != ws:
+            print("broadcasting to client with id", clients[cl].identifier)
+            await clients[cl].ws.send(json.dumps(msg))
+
+    print("New client", clients[ws].identifier)
+
+    return {
+        "method": "client_token",
+        "client_token": clients[ws].token
+    }
 
 
-start_server = websockets.serve(handler, "0.0.0.0", 6969)
+start_server = websockets.serve(handler, "0.0.0.0", 6969, ping_timeout=None, max_size=None)
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()
