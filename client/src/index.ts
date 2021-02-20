@@ -5,9 +5,7 @@ import { ServerDrawMessage } from './connection/server';
 const identifier = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
 
 function resizeCanvas() {
-    // canvas.setWidth(window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth);
-    // canvas.setHeight(window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight);
-    canvas.resize(window.innerWidth, window.innerHeight);
+    canvas.resize(document.documentElement.clientWidth, document.documentElement.clientHeight);
     console.log("resized blyat")
 }
 

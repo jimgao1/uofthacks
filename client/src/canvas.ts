@@ -30,11 +30,11 @@ export class DrawingCanvas {
     }
     
     public resize(w:number, h:number) {
-        var W = this.canvas.width;
-        var H = this.canvas.height;
+        const W = this.canvas.width;
+        const H = this.canvas.height;
         let temp = this.ctx.getImageData(0, 0, W, H);
-        this.ctx.canvas.width = w - 99;
-        this.ctx.canvas.height = h - 99;
+        this.ctx.canvas.width = w;
+        this.ctx.canvas.height = h;
         this.ctx.putImageData(temp, 0, 0);
     }
 
