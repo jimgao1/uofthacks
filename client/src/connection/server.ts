@@ -3,8 +3,7 @@ export type ServerMessage = ServerDrawMessage;
 export interface ServerDrawMessage {
     method: typeof ServerMethod.CLIENT_DRAW;
     identifier: string;
-    base: [number, number];
-    deltas: Array<[number, number]>;
+    points: Array<[number, number]>;
     color: string;
 }
 

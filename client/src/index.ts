@@ -23,7 +23,7 @@ const handler: MessageHandler = {
         if (msg.identifier === identifier) {
             return;
         }
-        canvas.drawStroke(msg.base, msg.deltas, msg.color);
+        canvas.drawStroke(msg.points, msg.color);
     }
 };
 

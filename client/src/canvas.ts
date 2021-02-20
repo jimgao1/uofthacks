@@ -3,11 +3,18 @@ interface Pos {
     y: number;
 };
 
+interface Stroke {
+    points: Array<[number, number]>;
+    color: string;
+};
+
 export class DrawingCanvas {
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
 
     /* rendering state */
+    private history: Array<Stroke> = [];
+    private current?: Stroke;
     private lastframe: number = 0;
 
     /* drawing state */
@@ -40,32 +47,27 @@ export class DrawingCanvas {
 
     private initEventHandlers() {
         this.canvas.addEventListener('mousedown', e => {
-            this.drawing = true;
-            this.lastpos.x = e.x;
-            this.lastpos.y = e.y;
+            console.log('start stroke');
+            this.startStroke(e.x, e.y);
         });
-        this.canvas.addEventListener('mouseup', e => {
-            this.drawing = false;
+        this.canvas.addEventListener('mouseup', _ => {
+            console.log('end stroke');
+            this.endStroke();
         });
         this.canvas.addEventListener('mousemove', e => {
-            this.curpos.x = e.x;
-            this.curpos.y = e.y;
+            console.log('fuck stroke', e.movementX, e.movementY);
+            this.updateStroke(e.movementX, e.movementY);
         });
         this.canvas.addEventListener('touchstart', e => {
-            this.drawing = true;
             const touch = e.touches[0];
-
-            this.lastpos.x = touch.clientX;
-            this.lastpos.y = touch.clientY;
+            this.startStroke(touch.clientX, touch.clientY);
         });
-        this.canvas.addEventListener('touchend', e => {
-            this.drawing = false;
+        this.canvas.addEventListener('touchend', _ => {
+            this.endStroke();
         });
         this.canvas.addEventListener('touchmove', e => {
             const touch = e.touches[0];
-
-            this.curpos.x = touch.clientX;
-            this.curpos.y = touch.clientY;
+            this.updateStroke(touch.clientX - this.curpos.x, touch.clientY - this.curpos.y);
         });
     }
 
@@ -87,15 +89,50 @@ export class DrawingCanvas {
         }
     }
 
-    drawStroke(base: [number, number], deltas: Array<[number, number]>, color: string) {
+    drawStroke(points: Array<[number, number]>, color: string) {
         this.ctx.strokeStyle = color;
-        this.ctx.moveTo(base[0], base[1]);
-        const lastpoint = base;
-        for (const delta of deltas) {
-            lastpoint[0] += delta[0];
-            lastpoint[1] += delta[1];
-            this.ctx.lineTo(lastpoint[0], lastpoint[1]);
+        this.ctx.moveTo(points[0][0], points[0][1]);
+        for (const point of points) {
+            this.ctx.lineTo(point[0], point[1]);
         }
         this.ctx.stroke();
+
+        this.history.push({
+            points,
+            color,
+        });
+    }
+
+    private startStroke(x: number, y: number) {
+        this.drawing = true;
+        this.lastpos.x = x;
+        this.lastpos.y = y;
+
+        this.current = {
+            points: [[x, y]],
+            color: this.ctx.strokeStyle.toString(),
+        };
+    }
+
+    private updateStroke(x: number, y: number) {
+        if (!this.drawing) {
+            return;
+        }
+        // TODO VERIFY THIS PLEASE
+        if (this.current) {
+            this.current.points.push([x, y]);
+        }
+
+        this.curpos.x = x;
+        this.curpos.y = y;
+    }
+
+    private endStroke() {
+        this.drawing = false;
+
+        if (this.current) {
+            this.history.push(this.current);
+            this.current = undefined;
+        }
     }
 };
