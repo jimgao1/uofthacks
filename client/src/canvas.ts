@@ -15,7 +15,7 @@ export class DrawingCanvas {
     private lastpos: Pos = { x: 0, y: 0 };
     private curpos: Pos = { x: 0, y: 0 };
 
-    constructor(element: HTMLCanvasElement) {
+    constructor(element: HTMLCanvasElement, private fpscounter?: HTMLDivElement | null) {
         const ctx = element.getContext('2d');
         if (ctx == null) {
             throw "Fuck off";
@@ -73,7 +73,11 @@ export class DrawingCanvas {
         let delta = timestamp - this.lastframe;
         this.lastframe = timestamp;
 
-        console.log(delta);
+        const fps = 1000 / delta;
+        if (this.fpscounter) {
+            this.fpscounter.textContent = `FPS: ${fps}`;
+        }
+
         if (this.drawing) {
             this.ctx.moveTo(this.lastpos.x, this.lastpos.y);
             this.ctx.lineTo(this.curpos.x, this.curpos.y);
