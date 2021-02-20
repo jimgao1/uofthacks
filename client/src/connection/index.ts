@@ -27,11 +27,11 @@ export class Connection {
                 const msg = JSON.parse(event.data);
                 if (msg.method === 'client_token') {
                     this.token = msg.client_token;
-                }
 
-                this.ws = ws;
-                ws.removeEventListener('message', tokenHandler);
-                resolve();
+                    this.ws = ws;
+                    ws.removeEventListener('message', tokenHandler);
+                    resolve();
+                }
             };
             const openHandler = () => {
                 const connectRequest: ClientConnectMessage = {
