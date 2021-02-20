@@ -1,4 +1,4 @@
-import { ClientConnectMessage, ClientMethod } from './client';
+import { ClientConnectMessage, ClientDrawMessage, ClientMethod } from './client';
 import { ServerMessage, ServerMethod } from './server';
 
 export interface MessageHandler {
@@ -69,7 +69,17 @@ export class Connection {
         this.ws.addEventListener('error', this.errorHandler);
     }
 
-    draw(stroke: Array<[number, number]>, color: string) {
-        // TODO
+    draw(points: Array<[number, number]>, color: string) {
+        if (this.ws === undefined || this.token === undefined) {
+            throw 'Please piss the fuck off';
+        }
+
+        const message: ClientDrawMessage = {
+            method: ClientMethod.DRAW,
+            token: this.token,
+            points,
+            color,
+        };
+        this.ws.send(JSON.stringify(message));
     }
 };

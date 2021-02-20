@@ -3,8 +3,7 @@ export type ClientMessage = ClientConnectMessage | ClientDrawMessage;
 export interface ClientDrawMessage {
     method: typeof ClientMethod.DRAW;
     token: string;
-    base: [number, number];
-    deltas: Array<[number, number]>;
+    points: Array<[number, number]>;
     color: string;
 };
 

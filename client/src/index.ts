@@ -1,6 +1,5 @@
 import { DrawingCanvas } from './canvas';
 import { Connection, MessageHandler } from './connection';
-import { ServerDrawMessage } from './connection/server';
 
 const identifier = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
 
@@ -33,6 +32,10 @@ connection.connect(prompt("url") || "ws://192.168.1.124:6969", prompt("name") ||
     console.log("connection successful");
     connection.attach();
 });
+
+canvas.strokeHandler = stroke => {
+    connection.draw(stroke.points, stroke.color);
+};
 
 
 resizeCanvas();

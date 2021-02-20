@@ -12,6 +12,8 @@ export class DrawingCanvas {
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
 
+    strokeHandler?: (s: Stroke) => void;
+
     /* rendering state */
     private history: Array<Stroke> = [];
     private current?: Stroke;
@@ -131,6 +133,10 @@ export class DrawingCanvas {
         this.drawing = false;
 
         if (this.current) {
+            if (this.strokeHandler) {
+                this.strokeHandler(this.current);
+            }
+
             this.history.push(this.current);
             this.current = undefined;
         }
