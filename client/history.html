@@ -49,6 +49,17 @@
             right: 30px;
         }
 
+        #settime {
+            position: absolute;
+            width: 80%;
+            height: 25px;
+            background: #d3d3d3;
+            outline: none;
+            opacity: 0.7;
+            bottom: 0px;
+            left: 20px;
+        }
+
         .header {
             padding: 5px;
             text-align: left;
@@ -61,16 +72,32 @@
             position: absolute;
             top: 0;
         }
-        
+
         #back {
             position: absolute;
             top: 60px;
+        }
+
+        #trans {
+            position: absolute;
+            top: 20px;
+            right: 0;
+            height:80%;
+            width:20%;
+            border:5px solid #3fff3f;
+            font:16px/26px Georgia, Garamond, Serif;
+            overflow:auto;
+        }
+
+        .transcription {
+            cursor: pointer;
+            border:5px solid #333333;
         }
     </style>
 </head>
 <body>
     <div id="overlay">
-        Connecting...
+        History Loading...
     </div>
     <div id="fpscounter"></div>
     <div id="userlist"></div>
@@ -84,17 +111,58 @@
                min="0" max="15">
         <label for="setwidth" id="setwidthlabel">Stroke Width</label>
     </div>
+    <div>
+        <input type="range" min="0" max="1000" value="1000" class="slider" id="settime">
+    </div>
     <div class="header" id="title">
-        <h1>Draw!</h1>
+        <h1>History Viewer</h1>
     </div>
     <div class="header" id="back" onclick="location.href='index.html'">
         <h1>Back</h1>
     </div>
+    <div id="trans">
+        <p>
+            Jimgao: fuck you 
+        </p>
+        <p>
+            Jimgao: fuck you 
+        </p>
+        <p>
+            Jimgao: fuck you 
+        </p>
+        <p>
+            Jimgao: fuck you 
+        </p>
+        <p>
+            Jimgao: fuck you 
+        </p>
+        <p>
+            Jimgao: fuck you 
+        </p>
+        <p>
+            Jimgao: fuck you 
+        </p>
+        <p>
+            Jimgao: fuck you 
+        </p>
+        <p>
+            Jimgao: fuck you 
+        </p>
+        <p>
+            Jimgao: fuck you 
+        </p>
+        <p>
+            Jimgao: fuck you 
+        </p>
+        <p>
+            Jimgao: fuck you 
+        </p>
+
+    </div>
     <canvas id="thecanvas" width="640" height="480">
     </canvas>
 
-    <div id="audio">
-    </div>
-    <script type="module" src="/src/index.js"></script>
+
+    <script type="module" src="/src/historyIndex.js"></script>
 </body>
 </html>
