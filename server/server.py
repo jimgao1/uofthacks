@@ -18,6 +18,7 @@ class Client:
 
 clients = dict()
 strokes = list()
+transcripts = list()
 
 oof = "http://192.168.1.124:8080/test.html"
 
@@ -26,7 +27,7 @@ async def connect(ws, req):
     if ws not in clients:
         clients[ws] = Client(ws, req)
 
-        # tell everyone else that a client joined
+    # tell everyone else that a client joined
     msg = {
         "method": "client_message",
         "identifier": clients[ws].identifier,
@@ -178,7 +179,7 @@ async def handler(ws, path):
     print("Closed")
 
 # initialize webserver
-from flask import Flask, make_response
+from flask import Flask, make_response, request
 import json
 
 app = Flask(__name__)
@@ -198,6 +199,22 @@ def route_users():
     resp = make_response(json.dumps(list(map(lambda k: (clients[k].name, clients[k].identifier), clients))))
     resp.headers['Access-Control-Allow-Origin'] = '*'
     return resp
+
+@app.route("/transcriptions")
+def route_transcriptions():
+    resp = make_response(json.dumps(transcripts))
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
+
+@app.route("/addtranscript", methods=['POST'])
+def route_add_transcript():
+    transcript = {
+        "timestamp": int(time.time()),
+        "identifier": request.form['identifier'],
+        "transcript": request.form['transcript']
+    }
+
+    transcripts.append(transcript)
 
 
 webserver_thread = threading.Thread(target=app.run, kwargs={"host": "0.0.0.0", "port": 6970})

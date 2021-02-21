@@ -84,6 +84,8 @@ class MicrophoneStream(object):
                 except queue.Empty:
                     break
 
+            print(len(data))
+
             yield b"".join(data)
 
 
