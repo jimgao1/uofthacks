@@ -55,7 +55,7 @@ export class DrawingCanvas {
     private curPerc: number = 1000;
     private curTime: number = 0;
 
-    constructor(element: HTMLCanvasElement, private setcolor: HTMLInputElement, private setwidth: HTMLInputElement, private settime: HTMLInputElement, private trans: HTMLDivElement, private fpscounter?: HTMLDivElement | null, private userlist?: HTMLDivElement | null) {
+    constructor(element: HTMLCanvasElement, private settime: HTMLInputElement, private trans: HTMLDivElement, private fpscounter?: HTMLDivElement | null, private userlist?: HTMLDivElement | null) {
         const ctx = element.getContext('2d');
         if (ctx == null) {
             throw "Fuck off";
@@ -68,22 +68,21 @@ export class DrawingCanvas {
         this.ctx.strokeStyle = this.color;
         this.ctx.lineWidth = this.lineWidth;
         this.getHistory();
-        this.setcolor.setAttribute("value", this.color);
-        this.setwidth.setAttribute("value", this.lineWidth.toString());
         this.initEventHandlers();
     }
     
     private drawHistoryStroke() {
         this.ctx.canvas.width = this.ctx.canvas.width;
         this.calcRealTime();
-        // console.log(this.minTime);
-        // console.log(this.maxTime);
-        // console.log(this.curPerc);
-        // console.log(this.curPerc);
+        console.log("drawing strokes blyat;")
+        console.log(this.curTime);
+        console.log("Comparing BLYTATTA");
         for (const stroke of this.historyStrokes) {
+            console.log(stroke.timestamp);
             if (stroke.timestamp > this.curTime) continue;
             this.drawStroke(stroke.points, stroke.color, false);
         }
+        console.log("done drawing blyat");
     }
 
     private drawHistoryTranscript() {
@@ -159,35 +158,6 @@ export class DrawingCanvas {
     };
 
     private initEventHandlers() {
-        this.canvas.addEventListener('mousedown', e => {
-            console.log('start stroke');
-            this.startStroke(e.x, e.y);
-        });
-        this.canvas.addEventListener('mouseup', _ => {
-            console.log('end stroke');
-            this.endStroke();
-        });
-        this.canvas.addEventListener('mousemove', e => {
-            this.updateStroke(e.x, e.y);
-        });
-        this.canvas.addEventListener('touchstart', e => {
-            const touch = e.touches[0];
-            this.startStroke(touch.clientX, touch.clientY);
-        });
-        this.canvas.addEventListener('touchend', _ => {
-            this.endStroke();
-        });
-        this.canvas.addEventListener('touchmove', e => {
-            const touch = e.touches[0];
-            this.updateStroke(touch.clientX, touch.clientY);
-        });
-        this.setcolor.addEventListener('input', e => {
-            this.color = this.setcolor.value;
-        });
-        this.setwidth.addEventListener('input', e => {
-            this.lineWidth = this.setwidth.valueAsNumber;
-            this.ctx.lineWidth = this.lineWidth;
-        });
         this.settime.addEventListener('input', e => {
             this.curPerc = this.settime.valueAsNumber;
             this.calcRealTime();
@@ -201,10 +171,12 @@ export class DrawingCanvas {
                     let diff: number = this.maxTime - this.minTime;
                     let diff2: number = temp - this.minTime;
                     this.curPerc = diff2 / diff;
-                    console.log(this.curPerc);
-                    this.resize(this.ctx.canvas.width, this.ctx.canvas.height);
-                    this.settime.setAttribute("value", (this.curPerc * this.offSet).toString());
+                    console.log("starting redraw proc:");
                     console.log(target.id);
+                    console.log(this.curPerc);
+                    this.drawHistoryStroke();
+                    this.settime.value = (this.curPerc * this.timeInt).toString();
+                    console.log(this.curPerc);
                 }
             }
         })
@@ -240,40 +212,5 @@ export class DrawingCanvas {
             this.ctx.lineTo(point[0], point[1]);
         }
         this.ctx.stroke();
-    }
-
-    private startStroke(x: number, y: number) {
-        this.drawing = true;
-        this.lastpos.x = x;
-        this.lastpos.y = y;
-        this.curpos = { ...this.lastpos };
-
-        this.current = {
-            points: [[x, y]],
-            color: this.color,
-        };
-    }
-
-    private updateStroke(x: number, y: number) {
-        if (!this.drawing) {
-            return;
-        }
-        if (this.current) {
-            this.current.points.push([x, y]);
-        }
-
-        this.curpos.x = x;
-        this.curpos.y = y;
-    }
-
-    private endStroke() {
-        this.drawing = false;
-
-        if (this.current) {
-            if (this.strokeHandler) {
-                this.strokeHandler(this.current);
-            }
-            this.current = undefined;
-        }
     }
 };
