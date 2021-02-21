@@ -21,6 +21,7 @@ export class DrawingCanvas {
     private current?: Stroke;
     private lastframe: number = 0;
     private users: Array<String> = [];
+    private lineWidth: number = 2;
 
     /* drawing state */
     private color: string = "#" + ((1<<24)*Math.random() | 0).toString(16);
@@ -28,7 +29,7 @@ export class DrawingCanvas {
     private lastpos: Pos = { x: 0, y: 0 };
     private curpos: Pos = { x: 0, y: 0 };
 
-    constructor(element: HTMLCanvasElement, private setcolor: HTMLInputElement, private fpscounter?: HTMLDivElement | null, private userlist?: HTMLDivElement | null) {
+    constructor(element: HTMLCanvasElement, private setcolor: HTMLInputElement, private setwidth: HTMLInputElement, private fpscounter?: HTMLDivElement | null, private userlist?: HTMLDivElement | null) {
         const ctx = element.getContext('2d');
         if (ctx == null) {
             throw "Fuck off";
@@ -39,13 +40,14 @@ export class DrawingCanvas {
 
         console.log(this.color);
         this.ctx.strokeStyle = this.color;
-        this.ctx.lineWidth = 2;
+        this.ctx.lineWidth = this.lineWidth;
         this.getHistory();
         this.setcolor.setAttribute("value", this.color);
+        this.setwidth.setAttribute("value", this.lineWidth.toString());
         this.initEventHandlers();
     }
     
-    public resize(w:number, h:number) {
+    public resize(w: number, h: number) {
         this.ctx.canvas.width = w;
         this.ctx.canvas.height = h;
         for (const stroke of this.history) {
@@ -104,6 +106,10 @@ export class DrawingCanvas {
         });
         this.setcolor.addEventListener('input', e => {
             this.color = this.setcolor.value;
+        });
+        this.setwidth.addEventListener('input', e => {
+            this.lineWidth = this.setwidth.valueAsNumber;
+            this.ctx.lineWidth = this.lineWidth;
         });
     }
 

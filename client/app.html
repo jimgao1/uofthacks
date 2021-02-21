@@ -25,15 +25,27 @@
             right: 5px;
         }
 
-        #setcolor, label {
+        #setcolor {
             position: absolute;
             bottom: 20px;
             right: 40px;
         }
 
-        label {
+        #setcolorlabel {
             position: absolute;
             bottom: 50px;
+            right: 30px;
+        }
+
+        #setwidth {
+            position: absolute;
+            bottom: 70px;
+            right: 10px;
+        }
+
+        #setwidthlabel {
+            position: absolute;
+            bottom: 100px;
             right: 30px;
         }
     </style>
@@ -47,8 +59,13 @@
     <div>
         <input type="color" id="setcolor" name="head"
                value="#e66465">
-        <label for="setcolor">Stroke Color</label>
+        <label for="setcolor" id="setcolorlabel">Stroke Color</label>
     </div>
+    <div>
+        <input type="range" id="setwidth" name="volume"
+               min="0" max="15">
+        <label for="setwidth" id="setwidthlabel">Stroke Width</label>
+      </div>
     <canvas id="thecanvas" width="640" height="480">
     </canvas>
 
