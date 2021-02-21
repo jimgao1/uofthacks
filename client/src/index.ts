@@ -23,7 +23,7 @@ const element = document.getElementById('thecanvas') as HTMLCanvasElement;
 if (element == null) {
     throw "Fuck you";
 }
-const canvas = new DrawingCanvas(element, document.getElementById('fpscounter') as HTMLDivElement, document.getElementById('userlist') as HTMLDivElement);
+const canvas = new DrawingCanvas(element, document.getElementById('setcolor') as HTMLInputElement, document.getElementById('fpscounter') as HTMLDivElement, document.getElementById('userlist') as HTMLDivElement);
 
 const handler: MessageHandler = {
     client_draw: msg => {

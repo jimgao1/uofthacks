@@ -28,7 +28,7 @@ export class DrawingCanvas {
     private lastpos: Pos = { x: 0, y: 0 };
     private curpos: Pos = { x: 0, y: 0 };
 
-    constructor(element: HTMLCanvasElement, private fpscounter?: HTMLDivElement | null, private userlist?: HTMLDivElement | null) {
+    constructor(element: HTMLCanvasElement, private setcolor: HTMLInputElement, private fpscounter?: HTMLDivElement | null, private userlist?: HTMLDivElement | null) {
         const ctx = element.getContext('2d');
         if (ctx == null) {
             throw "Fuck off";
@@ -41,6 +41,7 @@ export class DrawingCanvas {
         this.ctx.strokeStyle = this.color;
         this.ctx.lineWidth = 2;
         this.getHistory();
+        this.setcolor.setAttribute("value", this.color);
         this.initEventHandlers();
     }
     
@@ -100,6 +101,9 @@ export class DrawingCanvas {
         this.canvas.addEventListener('touchmove', e => {
             const touch = e.touches[0];
             this.updateStroke(touch.clientX, touch.clientY);
+        });
+        this.setcolor.addEventListener('input', e => {
+            this.color = this.setcolor.value;
         });
     }
 

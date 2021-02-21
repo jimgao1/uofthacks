@@ -24,6 +24,18 @@
             top: 40px;
             right: 5px;
         }
+
+        #setcolor, label {
+            position: absolute;
+            bottom: 20px;
+            right: 40px;
+        }
+
+        label {
+            position: absolute;
+            bottom: 50px;
+            right: 30px;
+        }
     </style>
 </head>
 <body>
@@ -32,6 +44,11 @@
     </div>
     <div id="fpscounter"></div>
     <div id="userlist"></div>
+    <div>
+        <input type="color" id="setcolor" name="head"
+               value="#e66465">
+        <label for="setcolor">Stroke Color</label>
+    </div>
     <canvas id="thecanvas" width="640" height="480">
     </canvas>
 
