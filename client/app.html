@@ -24,6 +24,30 @@
             top: 40px;
             right: 5px;
         }
+
+        #setcolor {
+            position: absolute;
+            bottom: 20px;
+            right: 40px;
+        }
+
+        #setcolorlabel {
+            position: absolute;
+            bottom: 50px;
+            right: 30px;
+        }
+
+        #setwidth {
+            position: absolute;
+            bottom: 70px;
+            right: 10px;
+        }
+
+        #setwidthlabel {
+            position: absolute;
+            bottom: 100px;
+            right: 30px;
+        }
     </style>
 </head>
 <body>
@@ -32,6 +56,16 @@
     </div>
     <div id="fpscounter"></div>
     <div id="userlist"></div>
+    <div>
+        <input type="color" id="setcolor" name="head"
+               value="#e66465">
+        <label for="setcolor" id="setcolorlabel">Stroke Color</label>
+    </div>
+    <div>
+        <input type="range" id="setwidth" name="volume"
+               min="0" max="15">
+        <label for="setwidth" id="setwidthlabel">Stroke Width</label>
+      </div>
     <canvas id="thecanvas" width="640" height="480">
     </canvas>
 

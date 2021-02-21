@@ -20,10 +20,12 @@ window.addEventListener('resize', resizeCanvas);
 
 
 const element = document.getElementById('thecanvas') as HTMLCanvasElement;
+const setc = document.getElementById('setcolor') as HTMLInputElement;
+const setw = document.getElementById('setwidth') as HTMLInputElement;
 if (element == null) {
     throw "Fuck you";
 }
-const canvas = new DrawingCanvas(element, document.getElementById('fpscounter') as HTMLDivElement, document.getElementById('userlist') as HTMLDivElement);
+const canvas = new DrawingCanvas(element, setc, setw, document.getElementById('fpscounter') as HTMLDivElement, document.getElementById('userlist') as HTMLDivElement);
 
 const handler: MessageHandler = {
     client_draw: msg => {
