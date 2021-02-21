@@ -53,6 +53,7 @@ export class DrawingCanvas {
         for (const stroke of this.history) {
             this.drawStroke(stroke.points, stroke.color, false);
         }
+        this.ctx.lineWidth = this.lineWidth;
     }
 
     private async getHistory() {
@@ -125,6 +126,7 @@ export class DrawingCanvas {
         if (this.drawing) {
             this.ctx.strokeStyle = this.color;
             this.ctx.beginPath();
+            this.ctx.lineCap = "round";
             this.ctx.moveTo(this.lastpos.x, this.lastpos.y);
             this.ctx.lineTo(this.curpos.x, this.curpos.y);
             this.ctx.stroke();
@@ -136,6 +138,7 @@ export class DrawingCanvas {
     drawStroke(points: Array<[number, number]>, color: string, save: boolean = true) {
         this.ctx.strokeStyle = color;
         this.ctx.beginPath();
+        this.ctx.lineCap = "round";
         this.ctx.moveTo(points[0][0], points[0][1]);
         for (const point of points) {
             this.ctx.lineTo(point[0], point[1]);
