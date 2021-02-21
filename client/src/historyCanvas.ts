@@ -170,12 +170,12 @@ export class DrawingCanvas {
                     let temp: number = parseInt(target.id, 10);
                     let diff: number = this.maxTime - this.minTime;
                     let diff2: number = temp - this.minTime;
-                    this.curPerc = diff2 / diff;
+                    this.curPerc = diff2 / diff * this.timeInt;
                     console.log("starting redraw proc:");
                     console.log(target.id);
                     console.log(this.curPerc);
                     this.drawHistoryStroke();
-                    this.settime.value = (this.curPerc * this.timeInt).toString();
+                    this.settime.value = (this.curPerc).toString();
                     console.log(this.curPerc);
                 }
             }
