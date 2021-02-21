@@ -34,16 +34,7 @@ players = {
 
 recorders = dict()
 
-rec = MediaRecorder("out.mp3")
-
-'''
-peerConnConfig = RTCConfiguration(
-    [
-        RTCIceServer(**{ 'urls': 'stun:stun.stunprotocol.org:3478' }),
-        RTCIceServer(**{ 'urls': 'stun:stun.l.google.com:19302' }),
-    ]
-)
-'''
+# rec = MediaRecorder("out.mp3")
 
 peerConnConfig = RTCConfiguration(
     [
@@ -66,7 +57,8 @@ async def setupPeer(ws, peerId, displayName, initCall=False):
     def on_track(track):
         print("Got track", track.kind, type(track))
         tracks[peerId] = track
-        rec.addTrack(track)
+        recorders[peerId] = MediaRecorder("record_%s_%d.mp3" % (peerId, int(time.time())))
+        recorders[peerId].addTrack(track)
 
     @pc.on('iceconnectionstatechange')
     def on_statechange():
@@ -142,8 +134,9 @@ async def client():
                 # set remote description
                 pc = peers[peerId]['pc']
                 await pc.setRemoteDescription(RTCSessionDescription(**msg['sdp']))
-                await rec.start()
-                print("starting recorder")
+
+                print("starting recorder", peerId)
+                await recorders[peerId].start()
                 if msg['sdp']['type'] == 'offer':
                     answer = await pc.createAnswer()
                     await pc.setLocalDescription(answer)
@@ -185,9 +178,9 @@ async def client():
         print("Done")
 
 async def stop_it():
-    # for k in recorders:
-        # await recorders[k].stop()
-    await rec.stop()
+    for k in recorders:
+        print("Stopping recorder", k)
+        await recorders[k].stop()
 
 try:
     # asyncio.get_event_loop().run_until_complete(rec.start())
