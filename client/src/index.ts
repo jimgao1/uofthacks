@@ -39,7 +39,7 @@ const setw = document.getElementById('setwidth') as HTMLInputElement;
 if (element == null) {
     throw "Fuck you";
 }
-const canvas = new DrawingCanvas(element, setc, setw, document.getElementById('fpscounter') as HTMLDivElement, document.getElementById('userlist') as HTMLDivElement);
+const canvas = new DrawingCanvas(element, setc, setw, url, document.getElementById('fpscounter') as HTMLDivElement, document.getElementById('userlist') as HTMLDivElement);
 
 const handler: MessageHandler = {
     client_draw: msg => {

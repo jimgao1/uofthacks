@@ -55,7 +55,7 @@ export class DrawingCanvas {
     private curPerc: number = 1000;
     private curTime: number = 0;
 
-    constructor(element: HTMLCanvasElement, private settime: HTMLInputElement, private trans: HTMLDivElement, private fpscounter?: HTMLDivElement | null, private userlist?: HTMLDivElement | null) {
+    constructor(element: HTMLCanvasElement, private settime: HTMLInputElement, private trans: HTMLDivElement, private url: string, private fpscounter?: HTMLDivElement | null, private userlist?: HTMLDivElement | null) {
         const ctx = element.getContext('2d');
         if (ctx == null) {
             throw "Fuck off";
@@ -118,7 +118,7 @@ export class DrawingCanvas {
     }
 
     private async getHistory() {
-        await axios.get('http://192.168.1.124:6970/strokes').then(async res => {
+        await axios.get(`https://${this.url}:46970/strokes`).then(async res => {
             for (const entries of res.data) {
                 this.historyStrokes.push(entries);
                 this.minTime = Math.min(this.minTime, entries.timestamp);
@@ -129,7 +129,7 @@ export class DrawingCanvas {
         }).catch(e => {
             throw "Error getting history stroke from server";
         })
-        await axios.get('http://192.168.1.124:6970/transcriptions').then(async res => {
+        await axios.get(`https://${this.url}:46970/transcriptions`).then(async res => {
             for (const entries of res.data) {
                 this.historyTranscripts.push(entries);
                 this.minTime = Math.min(this.minTime, entries.timestamp);
@@ -140,21 +140,6 @@ export class DrawingCanvas {
         }).catch(e => {
             throw "Error getting history transcripts from server";
         })
-    };
-
-    public async getUsers() {
-        await axios.get('http://192.168.1.124:6970/users').then(async res => {
-            this.users = res.data;
-        }).catch(e => {
-            throw "Error getting user lists";
-        })
-        if (this.userlist) {
-            let temp: string = "Client List:";
-            for (const user of this.users) {
-                temp = temp + "<br>" + user[0];
-            }
-            this.userlist.innerHTML = temp;
-        }
     };
 
     private initEventHandlers() {

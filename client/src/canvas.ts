@@ -34,7 +34,7 @@ export class DrawingCanvas {
     private maxTime: number = 0;
     private curTime: number = 0;
 
-    constructor(element: HTMLCanvasElement, private setcolor: HTMLInputElement, private setwidth: HTMLInputElement, private fpscounter?: HTMLDivElement | null, private userlist?: HTMLDivElement | null) {
+    constructor(element: HTMLCanvasElement, private setcolor: HTMLInputElement, private setwidth: HTMLInputElement, private url: string, private fpscounter?: HTMLDivElement | null, private userlist?: HTMLDivElement | null) {
         const ctx = element.getContext('2d');
         if (ctx == null) {
             throw "Fuck off";
@@ -67,7 +67,7 @@ export class DrawingCanvas {
     }
 
     private async getHistory() {
-        await axios.get('http://192.168.1.124:6970/strokes').then(async res => {
+        await axios.get(`https://${this.url}:46970/strokes`).then(async res => {
             for (const entries of res.data) {
                 this.history.push(entries);
                 this.minTime = Math.min(this.minTime, entries.timestamp);
@@ -80,7 +80,7 @@ export class DrawingCanvas {
     };
 
     public async getUsers() {
-        await axios.get('http://192.168.1.124:6970/users').then(async res => {
+        await axios.get(`https://${this.url}:46970/users`).then(async res => {
             this.users = res.data;
         }).catch(e => {
             throw "Error getting user lists";
