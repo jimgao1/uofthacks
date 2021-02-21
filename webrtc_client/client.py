@@ -12,10 +12,14 @@ from dataclasses import asdict
 
 from aiortc import RTCPeerConnection, RTCIceCandidate, RTCSessionDescription, RTCIceGatherer, RTCConfiguration, RTCIceServer
 from aiortc.contrib.media import MediaPlayer, MediaRecorder
+from aiortc.mediastreams import AudioStreamTrack
+
 
 from fuckery import candidate_from_sdp, candidate_to_sdp
 
-logging.basicConfig(level=logging.DEBUG)
+from transcribe_client import PyAVSource, TranscriberClient, TranscriberSourceReplenisher
+
+# logging.basicConfig(level=logging.DEBUG)
 
 ssl_ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT, verify_mode=ssl.CERT_NONE)
 ssl_ctx.check_hostname = False
@@ -46,23 +50,40 @@ peerConnConfig = RTCConfiguration(
 uuid = "3efc3d66-59e9-4f77-8d6a-329a0c7dea68"
 peers = dict()
 tracks = dict()
+names = dict()
+
+replenishers = dict()
+transcribers = dict()
+
+async def replenish(track, source):
+    while True:
+        frame = await track.recv()
+        source.buf.put(frame)
+        await asyncio.sleep(0.001)
 
 async def setupPeer(ws, peerId, displayName, initCall=False):
     peers[peerId] = { 'displayName': displayName, 'pc': RTCPeerConnection(peerConnConfig) }
+    names[peerId] = displayName
 
     pc = peers[peerId]['pc']
-    pc.addTrack(players['shemale'].audio)
+    # pc.addTrack(players['shemale'].audio)
+    pc.addTrack(AudioStreamTrack())
 
     @pc.on("track")
     def on_track(track):
         print("Got track", track.kind, type(track))
         tracks[peerId] = track
-        recorders[peerId] = MediaRecorder("record_%s_%d.mp3" % (peerId, int(time.time())))
-        recorders[peerId].addTrack(track)
+        # recorders[peerId] = MediaRecorder("record_%s_%d.mp3" % (peerId, int(time.time())))
+        # recorders[peerId].addTrack(track)
+
+        transcribers[peerId] = TranscriberClient(peerId, names[peerId], track)
+        # replenishers[peerId] = TranscriberSourceReplenisher(track, transcribers[peerId].source)
 
     @pc.on('iceconnectionstatechange')
     def on_statechange():
         print("fuck", pc.iceConnectionState)
+        if pc.iceConnectionState == "completed":
+            transcribers[peerId].start()
 
     @pc.on('icegatheringstatechange')
     def on_gatherchange():
@@ -135,8 +156,11 @@ async def client():
                 pc = peers[peerId]['pc']
                 await pc.setRemoteDescription(RTCSessionDescription(**msg['sdp']))
 
-                print("starting recorder", peerId)
-                await recorders[peerId].start()
+                # await recorders[peerId].start()
+                # replenishers[peerId].start()
+                asyncio.ensure_future(replenish(transcribers[peerId].track, transcribers[peerId].source))
+
+
                 if msg['sdp']['type'] == 'offer':
                     answer = await pc.createAnswer()
                     await pc.setLocalDescription(answer)
