@@ -19,5 +19,6 @@ async def handler(ws, path):
                     await client.send(msg)
         except Exception as e:
             print("error:", e)
+            ws.close()
     del clients[ws]
 
