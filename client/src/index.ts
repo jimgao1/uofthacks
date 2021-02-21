@@ -2,11 +2,16 @@ import { DrawingCanvas } from './canvas';
 import { Connection, MessageHandler } from './connection';
 import { WebRTCConnection } from './webrtc';
 
+const queryDict: { [key: string]: string } = {};
+location.search.substr(1).split("&").forEach(function(item) {queryDict[item.split("=")[0]] = item.split("=")[1]});
+
+const url = queryDict['url'] || window.location.hostname;
+
 const identifier = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
 
 const rtc = new WebRTCConnection(document.getElementById("audio") as HTMLDivElement);
 rtc.getUserMedia().then(() => {
-    return rtc.connect('ws://192.168.1.124:6968/', identifier);
+    return rtc.connect(`wss://${url}:46968/`, identifier);
     // return rtc.connect('ws://localhost:6968/', identifier);
 }).then(() => {
     rtc.attach();
@@ -45,11 +50,8 @@ const handler: MessageHandler = {
     }
 };
 
-const queryDict: { [key: string]: string } = {};
-location.search.substr(1).split("&").forEach(function(item) {queryDict[item.split("=")[0]] = item.split("=")[1]});
-
 const connection = new Connection(handler, null as any);
-connection.connect(queryDict['url'] || "ws://192.168.1.124:6969", queryDict['name'] || "Jim Fucking Gao", identifier)
+connection.connect(`wss://${url}:46969`, queryDict['name'] || "Jim Fucking Gao", identifier)
 .then(() => {
     console.log("connection successful");
     console.log(`token: ${connection.token}`)
@@ -61,8 +63,6 @@ connection.connect(queryDict['url'] || "ws://192.168.1.124:6969", queryDict['nam
 canvas.strokeHandler = stroke => {
     connection.draw(stroke.points, stroke.color);
 };
-
-
 
 resizeCanvas();
 startTimer();

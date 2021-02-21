@@ -146,7 +146,6 @@ export class WebRTCConnection {
     }
 }
 
-
 const peerConnectionConfig: RTCConfiguration = {
 	'iceServers': [
 		{ 'urls': 'stun:stun.stunprotocol.org:3478' },
