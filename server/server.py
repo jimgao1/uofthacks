@@ -79,7 +79,8 @@ async def draw(ws, req):
         # "base": req['base'],
         # "deltas": req['deltas'],
         "points": req['points'],
-        "color": req['color']
+        "color": req['color'],
+        "width": req['width']
     }
 
     strokes.append(msg)
