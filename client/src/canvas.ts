@@ -20,6 +20,7 @@ export class DrawingCanvas {
     private history: Array<Stroke> = [];
     private current?: Stroke;
     private lastframe: number = 0;
+    private users: Array<String> = [];
 
     /* drawing state */
     private color: string = "#" + ((1<<24)*Math.random() | 0).toString(16);
@@ -27,7 +28,7 @@ export class DrawingCanvas {
     private lastpos: Pos = { x: 0, y: 0 };
     private curpos: Pos = { x: 0, y: 0 };
 
-    constructor(element: HTMLCanvasElement, private fpscounter?: HTMLDivElement | null) {
+    constructor(element: HTMLCanvasElement, private fpscounter?: HTMLDivElement | null, private userlist?: HTMLDivElement | null) {
         const ctx = element.getContext('2d');
         if (ctx == null) {
             throw "Fuck off";
@@ -62,6 +63,21 @@ export class DrawingCanvas {
         })
     };
 
+    public async getUsers() {
+        await axios.get('http://192.168.1.124:6970/users').then(async res => {
+            this.users = res.data;
+        }).catch(e => {
+            throw "Error getting user lists";
+        })
+        if (this.userlist) {
+            let temp: string = "Client List:";
+            for (const user of this.users) {
+                temp = temp + "<br>" + user[0];
+            }
+            this.userlist.innerHTML = temp;
+        }
+    };
+
     private initEventHandlers() {
         this.canvas.addEventListener('mousedown', e => {
             console.log('start stroke');
@@ -91,7 +107,7 @@ export class DrawingCanvas {
         let delta = timestamp - this.lastframe;
         this.lastframe = timestamp;
 
-        const fps = 1000 / delta;
+        let fps = (1000 / delta).toFixed(2);
         if (this.fpscounter) {
             this.fpscounter.textContent = `FPS: ${fps}`;
         }
