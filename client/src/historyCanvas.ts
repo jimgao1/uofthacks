@@ -9,6 +9,7 @@ interface TimeStroke {
     points: Array<[number, number]>;
     timestamp: number;
     color: string;
+    width: number;
 };
 
 interface Stroke {
@@ -80,7 +81,7 @@ export class DrawingCanvas {
         for (const stroke of this.historyStrokes) {
             console.log(stroke.timestamp);
             if (stroke.timestamp > this.curTime) continue;
-            this.drawStroke(stroke.points, stroke.color, false);
+            this.drawStroke(stroke.points, stroke.color, stroke.width, false);
         }
         console.log("done drawing blyat");
     }
@@ -205,9 +206,10 @@ export class DrawingCanvas {
         }
     }
 
-    drawStroke(points: Array<[number, number]>, color: string, save: boolean = true) {
+    drawStroke(points: Array<[number, number]>, color: string, width: number, save: boolean = true) {
         this.ctx.strokeStyle = color;
         this.ctx.beginPath();
+        this.ctx.lineWidth = width;
         this.ctx.lineCap = "round";
         this.ctx.moveTo(points[0][0], points[0][1]);
         for (const point of points) {

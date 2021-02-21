@@ -8,6 +8,7 @@ interface Pos {
 interface Stroke {
     points: Array<[number, number]>;
     color: string;
+    width: number;
 };
 
 export class DrawingCanvas {
@@ -55,7 +56,7 @@ export class DrawingCanvas {
     private drawHistoryStroke() {
         for (const stroke of this.history) {
 
-            this.drawStroke(stroke.points, stroke.color, false);
+            this.drawStroke(stroke.points, stroke.color, stroke.width, false);
         }
     }
     
@@ -142,6 +143,7 @@ export class DrawingCanvas {
         if (this.drawing) {
             this.ctx.strokeStyle = this.color;
             this.ctx.beginPath();
+            this.ctx.lineWidth = parseFloat(this.setwidth.value);
             this.ctx.lineCap = "round";
             this.ctx.moveTo(this.lastpos.x, this.lastpos.y);
             this.ctx.lineTo(this.curpos.x, this.curpos.y);
@@ -151,9 +153,10 @@ export class DrawingCanvas {
         }
     }
 
-    drawStroke(points: Array<[number, number]>, color: string, save: boolean = true) {
+    drawStroke(points: Array<[number, number]>, color: string, width: number, save: boolean = true) {
         this.ctx.strokeStyle = color;
         this.ctx.beginPath();
+        this.ctx.lineWidth = width;
         this.ctx.lineCap = "round";
         this.ctx.moveTo(points[0][0], points[0][1]);
         for (const point of points) {
@@ -165,6 +168,7 @@ export class DrawingCanvas {
             this.history.push({
                 points,
                 color,
+                width,
             });
         }
     }
@@ -178,6 +182,7 @@ export class DrawingCanvas {
         this.current = {
             points: [[x, y]],
             color: this.color,
+            width: parseFloat(this.setwidth.value),
         };
     }
 

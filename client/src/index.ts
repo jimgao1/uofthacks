@@ -46,7 +46,7 @@ const handler: MessageHandler = {
         if (msg.identifier === identifier) {
             return;
         }
-        canvas.drawStroke(msg.points, msg.color);
+        canvas.drawStroke(msg.points, msg.color, msg.width);
     }
 };
 
@@ -61,7 +61,7 @@ connection.connect(`wss://${url}:46969`, queryDict['name'] || "Jim Fucking Gao",
 });
 
 canvas.strokeHandler = stroke => {
-    connection.draw(stroke.points, stroke.color);
+    connection.draw(stroke.points, stroke.color, stroke.width);
 };
 
 resizeCanvas();

@@ -5,6 +5,7 @@ export interface ServerDrawMessage {
     identifier: string;
     points: Array<[number, number]>;
     color: string;
+    width: number;
 }
 
 export enum ServerMethod {

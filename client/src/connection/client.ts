@@ -5,6 +5,7 @@ export interface ClientDrawMessage {
     token: string;
     points: Array<[number, number]>;
     color: string;
+    width: number;
 };
 
 export interface ClientConnectMessage {

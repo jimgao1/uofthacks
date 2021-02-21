@@ -69,7 +69,7 @@ export class Connection {
         this.ws.addEventListener('error', this.errorHandler);
     }
 
-    draw(points: Array<[number, number]>, color: string) {
+    draw(points: Array<[number, number]>, color: string, width: number) {
         if (this.ws === undefined || this.token === undefined) {
             throw 'Please piss the fuck off';
         }
@@ -79,6 +79,7 @@ export class Connection {
             token: this.token,
             points,
             color,
+            width,
         };
         this.ws.send(JSON.stringify(message));
     }

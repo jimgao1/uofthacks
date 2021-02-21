@@ -5,6 +5,8 @@
         html, body {
             margin: 0;
             overflow: hidden;
+
+            font-family: sans;
         }
 
         #overlay {
@@ -16,7 +18,7 @@
         #fpscounter {
             position: absolute;
             right: 0;
-            font-family: monospace
+            font-family: monospace;
         }
 
         #userlist {
@@ -57,25 +59,21 @@
             outline: none;
             opacity: 0.7;
             bottom: 0px;
-            left: 20px;
+            right: 0;
         }
 
         .header {
             padding: 5px;
             text-align: left;
-            background: #1abc9c;
+            background: #2775c8;
             color: white;
             font-size: 10px;
         }
 
-        #title {
-            position: absolute;
-            top: 0;
-        }
-
         #back {
             position: absolute;
-            top: 60px;
+            bottom: 0px;
+            cursor: pointer;
         }
 
         #trans {
@@ -84,28 +82,20 @@
             right: 0;
             height:80%;
             width:20%;
-            border:5px solid #3fff3f;
-            font:16px/26px Georgia, Garamond, Serif;
+            border:5px solid #2775c8;
             overflow:auto;
         }
 
         .transcription {
             cursor: pointer;
-            border:5px solid #333333;
+            border: 1px solid #333333;
         }
     </style>
 </head>
 <body>
-    <div id="overlay">
-        History Loading...
-    </div>
     <div id="fpscounter"></div>
-    <div id="userlist"></div>
     <div>
         <input type="range" min="0" max="1000" value="1000" class="slider" id="settime">
-    </div>
-    <div class="header" id="title">
-        <h1>History Viewer</h1>
     </div>
     <div class="header" id="back" onclick="location.href='index.html'">
         <h1>Back</h1>
