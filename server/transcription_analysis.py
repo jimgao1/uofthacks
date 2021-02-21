@@ -4,15 +4,20 @@ import re
 import sys
 
 from google.cloud import speech
+from google.cloud import language_v1
 
 import pyaudio
+import time
+
 from six.moves import queue
 
 # Audio recording parameters
 RATE = 16000
 CHUNK = int(RATE / 10)  # 100ms
 
+transcript_list = []
 
+start_time = time.perf_counter()
 
 class MicrophoneStream(object):
     """Opens a recording stream as a generator yielding the audio chunks."""
@@ -126,7 +131,9 @@ def listen_print_loop(responses):
             num_chars_printed = len(transcript)
 
         else:
-            print(transcript + overwrite_chars)
+            message = transcript + overwrite_chars
+            print(message)
+            transcript_list.append({'message': message, 'time': time.perf_counter() - start_time})
 
             # Exit recognition if any of the transcribed phrases could be
             # one of our keywords.
@@ -135,6 +142,27 @@ def listen_print_loop(responses):
                 break
 
             num_chars_printed = 0
+
+
+    print(transcript_list)
+
+    meeting_text = ""
+    for oof in transcript_list:
+        meeting_text += oof['message']
+
+    # Instantiates a client
+    client = language_v1.LanguageServiceClient()
+
+    # The text to analyze
+    text = meeting_text
+    document = language_v1.Document(content=text, type_=language_v1.Document.Type.PLAIN_TEXT)
+
+    # Detects the sentiment of the text
+    sentiment = client.analyze_sentiment(request={'document': document}).document_sentiment
+
+    print("Text: {}".format(text))
+    print("Sentiment: {}, {}".format(sentiment.score, sentiment.magnitude))
+
 
 
 def main():
@@ -153,6 +181,7 @@ def main():
         config=config, interim_results=True
     )
 
+    start_time = time.perf_counter()
     with MicrophoneStream(RATE, CHUNK) as stream:
         audio_generator = stream.generator()
         requests = (
