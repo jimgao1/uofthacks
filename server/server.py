@@ -1,10 +1,11 @@
-
 import asyncio
 import json
 import random
 import threading
 import time
 import websockets
+
+import rtc
 
 class Client:
     def __init__(self, ws, req):
@@ -202,8 +203,11 @@ def route_users():
 webserver_thread = threading.Thread(target=app.run, kwargs={"host": "0.0.0.0", "port": 6970})
 webserver_thread.start()
 
-start_server = websockets.serve(handler, "0.0.0.0", 6969, ping_timeout=None, max_size=None)
-asyncio.get_event_loop().run_until_complete(start_server)
-asyncio.get_event_loop().run_forever()
+async def ws_start():
+    main_server = await websockets.serve(handler, "0.0.0.0", 6969, ping_timeout=None, max_size=None)
+    rtc_server = await websockets.serve(rtc.handler, "0.0.0.0", 6968, ping_timeout=None, max_size=None)
+    await asyncio.gather(main_server.wait_closed(), rtc_server.wait_closed())
+
+asyncio.run(ws_start())
 
 webserver_thread.join()
