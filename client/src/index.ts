@@ -1,7 +1,16 @@
 import { DrawingCanvas } from './canvas';
 import { Connection, MessageHandler } from './connection';
+import { WebRTCConnection } from './webrtc';
 
 const identifier = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
+
+const rtc = new WebRTCConnection(document.getElementById("audio") as HTMLDivElement);
+rtc.getUserMedia().then(() => {
+    return rtc.connect('ws://192.168.1.124:6968/', identifier);
+    // return rtc.connect('ws://localhost:6968/', identifier);
+}).then(() => {
+    rtc.attach();
+});
 
 function resizeCanvas() {
     canvas.resize(document.documentElement.clientWidth, document.documentElement.clientHeight);
